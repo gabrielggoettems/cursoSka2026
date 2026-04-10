@@ -1,4 +1,4 @@
-import { Aluno } from "./classealuno.ts";
+import { Aluno } from "../classealuno.ts";
 
  const student = new  Aluno  ("Cuca","Beludo",12,"Masculino",10); 
  student.alterarNota(12);
