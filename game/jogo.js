@@ -9,6 +9,7 @@
       this.defesa = 0;
       this.cura = 0;
       this.imagem = "";
+      this.ultimoAtaque = "aguardando";
       this.jaUsouCura = false;
       this.nome = nome;
       this.vida = vida;
@@ -58,18 +59,11 @@
           return "erro";
       }
     }
-    defesaLancada() {
-      const defesa = this.gerarataque();
-      switch (defesa) {
-        case 1:
-          return "defesa fraca";
-        case 2:
-          return "defesa m\xE9dia";
-        case 3:
-          return "defesa forte";
-        default:
-          return "erro";
-      }
+    registrarAtaque(ataque) {
+      this.ultimoAtaque = ataque;
+    }
+    getUltimoAtaque() {
+      return this.ultimoAtaque;
     }
     getVida() {
       return this.vida;
@@ -116,14 +110,17 @@
       }
     }
     ataqueCavaleiro1(inimigo) {
+      this.registrarAtaque("Ataque fraco");
       this.log(`${this.nome} deu um ataque fraco em ${inimigo.nome}.`);
       inimigo.SofrerDano(5);
     }
     ataqueCavaleiro2(inimigo) {
+      this.registrarAtaque("Ataque medio");
       this.log(`${this.nome} deu um ataque medio em ${inimigo.nome}.`);
       inimigo.SofrerDano(10);
     }
     ataqueCavaleiro3(inimigo) {
+      this.registrarAtaque("Ataque poderoso");
       this.log(`${this.nome} deu um ataque poderoso em ${inimigo.nome}.`);
       inimigo.SofrerDano(20);
     }
@@ -149,14 +146,17 @@
       }
     }
     ataqueDragao1(inimigo) {
+      this.registrarAtaque("Arranhao fraco");
       this.log(`${this.nome} arranhou ${inimigo.nome}.`);
       inimigo.SofrerDano(5);
     }
     ataqueDragao2(inimigo) {
+      this.registrarAtaque("Mordida media");
       this.log(`${this.nome} mordeu ${inimigo.nome}.`);
       inimigo.SofrerDano(10);
     }
     ataqueDragao3(inimigo) {
+      this.registrarAtaque("Fogo poderoso");
       this.log(`${this.nome} cuspiu fogo em ${inimigo.nome}.`);
       inimigo.SofrerDano(20);
     }
@@ -178,14 +178,17 @@
       const ataque = this.gerarataque();
       switch (ataque) {
         case 1:
+          this.registrarAtaque("Magia fraca");
           this.log(`${this.nome} lancou magia fraca de fogo.`);
           inimigo.SofrerDano(5);
           break;
         case 2:
+          this.registrarAtaque("Magia media");
           this.log(`${this.nome} lancou magia media de gelo.`);
           inimigo.SofrerDano(10);
           break;
         case 3:
+          this.registrarAtaque("Magia poderosa");
           this.log(`${this.nome} lancou magia poderosa de raio.`);
           inimigo.SofrerDano(20);
           break;
@@ -194,32 +197,43 @@
   };
 
   // src/jogo.ts
+  var partidaAtual = 0;
+  var partidaEmAndamento = false;
+  var jogoPausado = false;
+  var resolverRetomada = null;
   var textosDosGolpes = {
     mago: ["Magia fraca", "Magia media", "Magia poderosa"],
     cavaleiro: ["Ataque fraco", "Ataque medio", "Ataque poderoso"],
     dragao: ["Arranhao fraco", "Mordida media", "Fogo poderoso"]
   };
   var Jogo = class {
-    async iniciarJogo(player1, player2) {
+    async iniciarJogo(player1, player2, idDaPartida) {
       let turno = 1;
       this.log(`Partida iniciada: ${player1.nome} VS ${player2.nome}`);
       this.atualizarInterface(player1, player2);
-      while (player1.iscontinuavivo() && player2.iscontinuavivo()) {
+      while (partidaEstaAtiva(idDaPartida) && player1.iscontinuavivo() && player2.iscontinuavivo()) {
+        await aguardarRetomada(idDaPartida);
+        if (!partidaEstaAtiva(idDaPartida)) break;
         this.log(`Round ${turno}`);
         player1.atacar(player2);
+        atualizarAtaqueUsado(1, player1.getUltimoAtaque());
         animarAtaque(1, player1);
         this.atualizarInterface(player1, player2);
         await this.esperarTempo();
-        if (!player2.iscontinuavivo()) break;
+        await aguardarRetomada(idDaPartida);
+        if (!partidaEstaAtiva(idDaPartida) || !player2.iscontinuavivo()) break;
         player2.atacar(player1);
+        atualizarAtaqueUsado(2, player2.getUltimoAtaque());
         animarAtaque(2, player2);
         this.atualizarInterface(player1, player2);
         await this.esperarTempo();
         turno++;
       }
-      this.log(
-        player1.iscontinuavivo() ? `${player1.nome} venceu!` : `${player2.nome} venceu!`
-      );
+      if (partidaEstaAtiva(idDaPartida)) {
+        this.log(
+          player1.iscontinuavivo() ? `${player1.nome} venceu!` : `${player2.nome} venceu!`
+        );
+      }
     }
     buscaComponente(id) {
       return document.getElementById(id);
@@ -235,11 +249,14 @@
       const vida = this.buscaComponente(`vida${numeroDoPlayer}`);
       const nome = carta?.querySelector(`.PlayerEfeito${numeroDoPlayer}`);
       const vidaAtual = Math.max(0, Math.round(player.getVida()));
+      const tipo = descobrirTipoPersonagem(player);
       if (imagem) {
         imagem.src = player.getImgem();
+        imagem.className = `tipo-${tipo}`;
       }
       if (imagemArena) {
         imagemArena.src = player.getImgem();
+        imagemArena.className = `arena-personagem arena-player${numeroDoPlayer} tipo-${tipo}`;
       }
       if (vida) {
         vida.style.width = `${vidaAtual}%`;
@@ -305,6 +322,42 @@
     ataque.classList.add(`atacando-p${numeroDoPlayer}`);
     personagemArena?.classList.add(`arena-atacando-p${numeroDoPlayer}`);
   }
+  function partidaEstaAtiva(idDaPartida) {
+    return partidaEmAndamento && partidaAtual === idDaPartida;
+  }
+  function atualizarAtaqueUsado(numeroDoPlayer, ataque) {
+    const indicador = document.getElementById(`ataqueUsado${numeroDoPlayer}`);
+    if (indicador) {
+      indicador.textContent = `P${numeroDoPlayer}: ${ataque}`;
+    }
+  }
+  function limparAtaquesUsados() {
+    atualizarAtaqueUsado(1, "aguardando");
+    atualizarAtaqueUsado(2, "aguardando");
+  }
+  async function aguardarRetomada(idDaPartida) {
+    while (jogoPausado && partidaEstaAtiva(idDaPartida)) {
+      await new Promise((resolve) => {
+        resolverRetomada = resolve;
+      });
+    }
+  }
+  function retomarJogo() {
+    jogoPausado = false;
+    resolverRetomada?.();
+    resolverRetomada = null;
+  }
+  function atualizarControles(textoBotao, mostrarReiniciar, desabilitarBotao = false) {
+    const botao = document.getElementById("botaojogar");
+    const botaoReiniciar = document.getElementById("botaoreiniciar");
+    if (botao) {
+      botao.textContent = textoBotao;
+      botao.disabled = desabilitarBotao;
+    }
+    if (botaoReiniciar) {
+      botaoReiniciar.hidden = !mostrarReiniciar;
+    }
+  }
   function prepararPrevia() {
     const tipoPlayer1 = lerSelecao("selectPlayer1");
     const tipoPlayer2 = lerSelecao("selectPlayer2");
@@ -313,30 +366,50 @@
     const player2 = criarPersonagem(tipoPlayer2, 2);
     atualizarGolpes(1, tipoPlayer1);
     atualizarGolpes(2, tipoPlayer2);
+    limparAtaquesUsados();
     partida.atualizarInterface(player1, player2);
   }
   async function construirJogo() {
-    const botao = document.getElementById("botaojogar");
     const consoleDoJogo = document.getElementById("console");
     const tipoPlayer1 = lerSelecao("selectPlayer1");
     const tipoPlayer2 = lerSelecao("selectPlayer2");
     const player1 = criarPersonagem(tipoPlayer1, 1);
     const player2 = criarPersonagem(tipoPlayer2, 2);
     const partida = new Jogo();
-    if (botao) {
-      botao.disabled = true;
-    }
+    const idDaPartida = ++partidaAtual;
+    partidaEmAndamento = true;
+    retomarJogo();
+    atualizarControles("Pausar", true);
     if (consoleDoJogo) {
       consoleDoJogo.innerHTML = "<p>Console de jogo</p>";
     }
     atualizarGolpes(1, tipoPlayer1);
     atualizarGolpes(2, tipoPlayer2);
-    await partida.iniciarJogo(player1, player2);
-    if (botao) {
-      botao.disabled = false;
+    limparAtaquesUsados();
+    await partida.iniciarJogo(player1, player2, idDaPartida);
+    if (partidaAtual === idDaPartida) {
+      partidaEmAndamento = false;
+      retomarJogo();
+      atualizarControles("Jogar", false);
     }
   }
-  document.getElementById("botaojogar")?.addEventListener("click", construirJogo);
+  function controlarBotaoPrincipal() {
+    if (!partidaEmAndamento) {
+      construirJogo();
+      return;
+    }
+    jogoPausado = !jogoPausado;
+    atualizarControles(jogoPausado ? "Retomar" : "Pausar", true);
+    if (!jogoPausado) retomarJogo();
+  }
+  function reiniciarJogo() {
+    partidaAtual++;
+    partidaEmAndamento = false;
+    retomarJogo();
+    construirJogo();
+  }
+  document.getElementById("botaojogar")?.addEventListener("click", controlarBotaoPrincipal);
+  document.getElementById("botaoreiniciar")?.addEventListener("click", reiniciarJogo);
   document.getElementById("selectPlayer1")?.addEventListener("change", prepararPrevia);
   document.getElementById("selectPlayer2")?.addEventListener("change", prepararPrevia);
   prepararPrevia();
