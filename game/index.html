@@ -55,6 +55,10 @@
       <img class="arena-personagem arena-player2" id="arenaPlayer2" src="" alt="Jogador 2 na arena">
       <div class="ataque ataque-p1"></div>
       <div class="ataque ataque-p2"></div>
+      <div class="ataques-usados">
+        <span id="ataqueUsado1">P1: aguardando</span>
+        <span id="ataqueUsado2">P2: aguardando</span>
+      </div>
     </div>
 
 
@@ -74,7 +78,10 @@
     </div>
   </div>
 
-  <button class="botao_jogar" id="botaojogar" type="button">Jogar</button>
+  <div class="controles-jogo">
+    <button class="botao_jogar" id="botaojogar" type="button">Jogar</button>
+    <button class="botao_reiniciar" id="botaoreiniciar" type="button" hidden>Reiniciar</button>
+  </div>
 
   <div class="console" id="console">
     <p>Console de jogo</p>
