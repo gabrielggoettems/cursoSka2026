@@ -79,20 +79,6 @@ export abstract class Personagem {
 
   public abstract atacar(inimigo: Personagem): void;
 
-  defesaLancada(): string {
-    const defesa = this.gerarataque();
-    switch (defesa) {
-      case 1:
-        return "defesa fraca";
-      case 2:
-        return "defesa média";
-      case 3:
-        return "defesa forte";
-      default:
-        return "erro";
-    }
-  }
-
   getVida() {
     return this.vida;
   }
