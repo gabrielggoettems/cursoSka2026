@@ -1,0 +1,335 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: #1b1b1b;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.titulo {
+  margin: 28px 0 16px;
+  color: gold;
+  text-align: center;
+}
+
+.selecao {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px auto;
+  flex-wrap: wrap;
+}
+
+.selecao label {
+  display: grid;
+  gap: 6px;
+  color: gold;
+  font-weight: bold;
+}
+
+.selecao select {
+  width: 220px;
+  padding: 8px 10px;
+  border: 2px solid #5f391f;
+  border-radius: 6px;
+  background: #f4e4c7;
+  color: #211409;
+  font-weight: bold;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 42px;
+  margin: 32px auto 20px;
+  padding: 0 20px;
+  flex-wrap: wrap;
+}
+
+.player {
+  display: flex;
+  justify-content: center;
+}
+
+.fundoCarta {
+  width: 220px;
+  min-height: 360px;
+  padding: 12px;
+  border: 4px solid #2a170c;
+  border-radius: 10px;
+  background: #8b4513;
+  color: white;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.35);
+}
+
+.player img {
+  display: block;
+  width: 100%;
+  height: 170px;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 6px;
+  background: #f6f0df;
+  object-fit: contain;
+}
+
+.bordaBarra {
+  overflow: hidden;
+  border: 3px solid black;
+  border-radius: 5px;
+  background: #2d2d2d;
+}
+
+.barra {
+  width: 100%;
+  height: 24px;
+  background: #333;
+}
+
+.vida {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: limegreen;
+  color: black;
+  font-size: 13px;
+  font-weight: bold;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.PlayerEfeito1,
+.PlayerEfeito2 {
+  margin: 12px 0 10px;
+  color: gold;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.golpe1,
+.golpe2,
+.golpe3,
+.fundoCarta > div:not(.bordaBarra):not(.PlayerEfeito1):not(.PlayerEfeito2) {
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.18);
+  text-align: center;
+}
+
+.vs,
+.vs-text {
+  color: yellow;
+  font-size: 42px;
+  text-shadow: 0 2px 0 black;
+}
+
+.botao_jogar,
+.botaoJogar {
+  display: block;
+  margin: 24px auto;
+  padding: 12px 34px;
+  border: 0;
+  border-radius: 6px;
+  background: #168b37;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.botao_jogar:disabled,
+.botaoJogar:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.console {
+  width: min(760px, calc(100% - 32px));
+  height: 140px;
+  margin: 0 auto 32px;
+  padding: 12px;
+  overflow: auto;
+  border: 2px solid #3b3b3b;
+  border-radius: 8px;
+  background: black;
+  color: white;
+}
+
+.console p {
+  margin: 0 0 6px;
+}
+
+.arena {
+  position: relative;
+  width: 500px;
+  height: 360px;
+  border: 4px solid #2a170c;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #222;
+}
+
+.arena-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.arena-personagem {
+  position: absolute;
+  bottom: 18px;
+  z-index: 2;
+  width: 125px;
+  height: 150px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 10px rgba(0, 0, 0, 0.65));
+  pointer-events: none;
+}
+
+.arena-player1 {
+  left: 34px;
+  transform: rotateY(160deg);
+}
+
+
+.arena-player2 {
+  right: 34px;
+  transform: rotateY(360deg);
+}
+
+.arena-atacando-p1 {
+  animation: personagemAtacaP1 0.45s ease;
+}
+
+.arena-atacando-p2 {
+  animation: personagemAtacaP2 0.45s ease;
+}
+
+.ataque {
+  position: absolute;
+  top: 58%;
+  z-index: 3;
+  opacity: 0;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.ataque-p1 {
+  left: 132px;
+  transform-origin: left center;
+}
+
+.ataque-p2 {
+  right: 132px;
+  transform-origin: right center;
+}
+
+.ataque-mago {
+  width: 190px;
+  height: 16px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #ffffff, #42e8ff, transparent);
+  box-shadow: 0 0 18px #42e8ff, 0 0 30px #1f8fff;
+}
+
+.ataque-cavaleiro {
+  width: 135px;
+  height: 52px;
+  border: solid #f5f5f5;
+  border-width: 5px 0 0 0;
+  border-radius: 50%;
+  box-shadow: 0 -6px 14px rgba(255, 255, 255, 0.85);
+}
+
+.ataque-dragao {
+  width: 210px;
+  height: 72px;
+  clip-path: polygon(0 50%, 18% 18%, 34% 40%, 50% 12%, 72% 44%, 100% 50%, 72% 56%, 50% 88%, 34% 60%, 18% 82%);
+  background: linear-gradient(90deg, #fff3a6, #ff7a1a, #d91414, transparent);
+  box-shadow: 0 0 22px #ff7a1a, 0 0 40px #ff1f1f;
+}
+
+.ataque-p2.ataque-mago {
+  background: linear-gradient(270deg, #ffffff, #42e8ff, transparent);
+}
+
+.ataque-p2.ataque-dragao {
+  background: linear-gradient(270deg, #fff3a6, #ff7a1a, #d91414, transparent);
+}
+
+.atacando-p1 {
+  animation: ataqueP1 0.5s ease;
+}
+
+.atacando-p2 {
+  animation: ataqueP2 0.5s ease;
+}
+
+@keyframes ataqueP1 {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) scaleX(0);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) scaleX(1);
+  }
+}
+
+@keyframes ataqueP2 {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) scaleX(0);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) scaleX(1);
+  }
+}
+
+@keyframes personagemAtacaP1 {
+  50% {
+    transform: translateX(24px);
+  }
+}
+
+@keyframes personagemAtacaP2 {
+  50% {
+    transform: translateX(-24px) scaleX(-1);
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    gap: 18px;
+  }
+
+  .vs,
+  .vs-text {
+    width: 100%;
+    margin: 0;
+    text-align: center;
+  }
+}
