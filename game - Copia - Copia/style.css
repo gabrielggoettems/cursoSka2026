@@ -117,6 +117,7 @@ body {
 .golpe1,
 .golpe2,
 .golpe3,
+.habilidadeAtual,
 .fundoCarta > div:not(.bordaBarra):not(.PlayerEfeito1):not(.PlayerEfeito2) {
   margin-top: 8px;
   padding: 8px;
@@ -126,6 +127,15 @@ body {
   text-align: center;
 }
 
+.habilidadeAtual {
+  min-height: 38px;
+  border-color: rgba(255, 215, 0, 0.65);
+  background: rgba(255, 215, 0, 0.16);
+  color: #ffe66d;
+  font-size: 14px;
+  font-weight: bold;
+}
+
 .vs,
 .vs-text {
   color: yellow;
@@ -133,21 +143,46 @@ body {
   text-shadow: 0 2px 0 black;
 }
 
+.controles {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 24px auto;
+  padding: 0 16px;
+  flex-wrap: wrap;
+}
+
 .botao_jogar,
+.botao_pause,
+.botao_reiniciar,
 .botaoJogar {
   display: block;
-  margin: 24px auto;
+  min-width: 130px;
   padding: 12px 34px;
   border: 0;
   border-radius: 6px;
-  background: #168b37;
   color: white;
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
 }
 
+.botao_jogar,
+.botaoJogar {
+  background: #168b37;
+}
+
+.botao_pause {
+  background: #b87512;
+}
+
+.botao_reiniciar {
+  background: #9b2f2f;
+}
+
 .botao_jogar:disabled,
+.botao_pause:disabled,
+.botao_reiniciar:disabled,
 .botaoJogar:disabled {
   opacity: 0.6;
   cursor: wait;
@@ -255,7 +290,7 @@ body {
   width: 210px;
   height: 72px;
   clip-path: polygon(0 50%, 18% 18%, 34% 40%, 50% 12%, 72% 44%, 100% 50%, 72% 56%, 50% 88%, 34% 60%, 18% 82%);
-  background: linear-gradient(90deg, #fff3a6, #ff7a1a, #d91414, transparent);
+  background: linear-gradient(90deg, #d91414, #ff7a1a, #fff3a6, transparent);
   box-shadow: 0 0 22px #ff7a1a, 0 0 40px #ff1f1f;
 }
 
@@ -265,6 +300,10 @@ body {
 
 .ataque-p2.ataque-dragao {
   background: linear-gradient(270deg, #fff3a6, #ff7a1a, #d91414, transparent);
+}
+
+.ataque-p1.ataque-dragao.atacando-p1 {
+  animation: ataqueDragaoP1 0.5s ease;
 }
 
 .atacando-p1 {
@@ -306,6 +345,23 @@ body {
   100% {
     opacity: 0;
     transform: translateY(-50%) scaleX(1);
+  }
+}
+
+@keyframes ataqueDragaoP1 {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(210px) scaleX(0);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(210px) scaleX(-1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(210px) scaleX(-1);
   }
 }
 

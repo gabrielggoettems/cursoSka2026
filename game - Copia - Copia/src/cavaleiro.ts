@@ -1,6 +1,12 @@
 import { Personagem } from "./personagem.ts";
 
 export class Cavaleiro extends Personagem {
+  private ataques = [
+    { dano: 5, habilidade: "Ataque fraco", mensagem: "deu um ataque fraco" },
+    { dano: 10, habilidade: "Ataque médio", mensagem: "deu um ataque médio" },
+    { dano: 20, habilidade: "Ataque poderoso", mensagem: "deu um ataque poderoso" },
+  ];
+
   constructor(nome: string, vida: number, forca: number, defesa: number) {
     super(
       nome,
@@ -12,36 +18,13 @@ export class Cavaleiro extends Personagem {
     );
   }
 
-  public atacar(inimigo: Personagem): void {
-    const ataque = this.gerarataque();
+  public atacar(inimigo: Personagem): string {
+    const index = this.gerarAtaque() - 1;
+    const ataque = this.ataques[index];
 
-    switch (ataque) {
-      case 1:
-        this.ataqueCavaleiro1(inimigo);
-        break;
+    this.log(`${this.nome} ${ataque.mensagem} em ${inimigo.nome}.`);
+    inimigo.sofrerDano(ataque.dano);
 
-      case 2:
-        this.ataqueCavaleiro2(inimigo);
-        break;
-
-      case 3:
-        this.ataqueCavaleiro3(inimigo);
-        break;
-    }
-  }
-
-  ataqueCavaleiro1(inimigo: Personagem): void {
-    this.log(`${this.nome} deu um ataque fraco em ${inimigo.nome}.`);
-    inimigo.SofrerDano(5);
-  }
-
-  ataqueCavaleiro2(inimigo: Personagem): void {
-    this.log(`${this.nome} deu um ataque medio em ${inimigo.nome}.`);
-    inimigo.SofrerDano(10);
-  }
-
-  ataqueCavaleiro3(inimigo: Personagem): void {
-    this.log(`${this.nome} deu um ataque poderoso em ${inimigo.nome}.`);
-    inimigo.SofrerDano(20);
+    return ataque.habilidade;
   }
 }

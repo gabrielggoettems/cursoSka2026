@@ -1,40 +1,23 @@
 import { Personagem } from "./personagem.ts";
 
 export class Dragao extends Personagem {
+  private ataques = [
+    { dano: 5, habilidade: "Arranhão fraco", mensagem: "arranhou" },
+    { dano: 10, habilidade: "Mordida média", mensagem: "mordeu" },
+    { dano: 20, habilidade: "Fogo poderoso", mensagem: "cuspiu fogo em" },
+  ];
+
   constructor(nome: string, vida: number, forca: number, defesa: number) {
     super(nome, vida, forca, defesa, 25, "./public/dragao.png");
   }
 
-  public atacar(inimigo: Personagem): void {
-    const ataque = this.gerarataque();
+  public atacar(inimigo: Personagem): string {
+    const index = this.gerarAtaque() - 1;
+    const ataque = this.ataques[index];
 
-    switch (ataque) {
-      case 1:
-        this.ataqueDragao1(inimigo);
-        break;
+    this.log(`${this.nome} ${ataque.mensagem} ${inimigo.nome}.`);
+    inimigo.sofrerDano(ataque.dano);
 
-      case 2:
-        this.ataqueDragao2(inimigo);
-        break;
-
-      case 3:
-        this.ataqueDragao3(inimigo);
-        break;
-    }
-  }
-
-  ataqueDragao1(inimigo: Personagem): void {
-    this.log(`${this.nome} arranhou ${inimigo.nome}.`);
-    inimigo.SofrerDano(5);
-  }
-
-  ataqueDragao2(inimigo: Personagem): void {
-    this.log(`${this.nome} mordeu ${inimigo.nome}.`);
-    inimigo.SofrerDano(10);
-  }
-
-  ataqueDragao3(inimigo: Personagem): void {
-    this.log(`${this.nome} cuspiu fogo em ${inimigo.nome}.`);
-    inimigo.SofrerDano(20);
+    return ataque.habilidade;
   }
 }

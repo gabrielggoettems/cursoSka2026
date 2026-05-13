@@ -6,29 +6,43 @@ import { Personagem } from "./personagem.ts";
 type TipoPersonagem = "mago" | "cavaleiro" | "dragao";
 
 const textosDosGolpes: Record<TipoPersonagem, string[]> = {
-  mago: ["Magia fraca", "Magia media", "Magia poderosa"],
-  cavaleiro: ["Ataque fraco", "Ataque medio", "Ataque poderoso"],
-  dragao: ["Arranhao fraco", "Mordida media", "Fogo poderoso"],
+  mago: ["Magia fraca", "Magia média", "Magia poderosa"],
+  cavaleiro: ["Ataque fraco", "Ataque médio", "Ataque poderoso"],
+  dragao: ["Arranhão fraco", "Mordida média", "Fogo poderoso"],
 };
 
 export class Jogo {
+  private pausado: boolean = false;
+  private cancelado: boolean = false;
+
   public async iniciarJogo(player1: Personagem, player2: Personagem) {
     let turno = 1;
 
     this.log(`Partida iniciada: ${player1.nome} VS ${player2.nome}`);
     this.atualizarInterface(player1, player2);
+    limparHabilidades();
 
-    while (player1.iscontinuavivo() && player2.iscontinuavivo()) {
+    while (!this.cancelado && player1.estaVivo() && player2.estaVivo()) {
+      await this.esperarSePausado();
+      if (this.cancelado) break;
+
       this.log(`Round ${turno}`);
 
-      player1.atacar(player2);
+      const habilidadePlayer1 = player1.atacar(player2);
+      mostrarHabilidade(1, habilidadePlayer1);
+      mostrarHabilidade(2, "Aguardando...");
       animarAtaque(1, player1);
       this.atualizarInterface(player1, player2);
       await this.esperarTempo();
 
-      if (!player2.iscontinuavivo()) break;
+      if (this.cancelado || !player2.estaVivo()) break;
 
-      player2.atacar(player1);
+      await this.esperarSePausado();
+      if (this.cancelado) break;
+
+      const habilidadePlayer2 = player2.atacar(player1);
+      mostrarHabilidade(2, habilidadePlayer2);
+      mostrarHabilidade(1, "Aguardando...");
       animarAtaque(2, player2);
       this.atualizarInterface(player1, player2);
       await this.esperarTempo();
@@ -36,11 +50,34 @@ export class Jogo {
       turno++;
     }
 
+    if (this.cancelado) {
+      return;
+    }
+
+    limparHabilidades();
     this.log(
-      player1.iscontinuavivo()
+      player1.estaVivo()
         ? `${player1.nome} venceu!`
         : `${player2.nome} venceu!`,
     );
+  }
+
+  public pausar(): void {
+    this.pausado = true;
+  }
+
+  public continuar(): void {
+    this.pausado = false;
+  }
+
+  public alternarPausa(): boolean {
+    this.pausado = !this.pausado;
+    return this.pausado;
+  }
+
+  public cancelar(): void {
+    this.cancelado = true;
+    this.pausado = false;
   }
 
   buscaComponente<T extends HTMLElement>(id: string) {
@@ -59,15 +96,13 @@ export class Jogo {
     const vida = this.buscaComponente<HTMLDivElement>(`vida${numeroDoPlayer}`);
     const nome = carta?.querySelector(`.PlayerEfeito${numeroDoPlayer}`);
     const vidaAtual = Math.max(0, Math.round(player.getVida()));
-      
 
     if (imagem) {
-      imagem.src = player.getImgem();
+      imagem.src = player.getImagem();
     }
 
-
     if (imagemArena) {
-      imagemArena.src = player.getImgem();
+      imagemArena.src = player.getImagem();
     }
 
     if (vida) {
@@ -82,7 +117,21 @@ export class Jogo {
   }
 
   public async esperarTempo() {
-    return new Promise((resolve) => setTimeout(resolve, 1000));
+    const tempoTotal = 1000;
+    const intervalo = 100;
+    let tempoPassado = 0;
+
+    while (!this.cancelado && tempoPassado < tempoTotal) {
+      await this.esperarSePausado();
+      await new Promise((resolve) => setTimeout(resolve, intervalo));
+      tempoPassado += intervalo;
+    }
+  }
+
+  private async esperarSePausado() {
+    while (this.pausado && !this.cancelado) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
   }
 
   private log(mensagem: string) {
@@ -95,11 +144,14 @@ export class Jogo {
   }
 }
 
+let partidaAtual: Jogo | null = null;
+let jogoRodando = false;
+
 function criarPersonagem(tipo: TipoPersonagem, jogador: 1 | 2): Personagem {
   const nomes: Record<TipoPersonagem, string> = {
     mago: jogador === 1 ? "Mago Merlin" : "Mago Gandalf",
     cavaleiro: jogador === 1 ? "Cavaleiro Arthur" : "Cavaleiro Morgan",
-    dragao: jogador === 1 ? "Dragão Hræzlyr" : "Dragão Shielong",
+    dragao: jogador === 1 ? "Dragão Hraezlyr" : "Dragão Shielong",
   };
 
   switch (tipo) {
@@ -124,6 +176,19 @@ function atualizarGolpes(numeroDoPlayer: 1 | 2, tipo: TipoPersonagem) {
   carta?.querySelectorAll(".golpe1, .golpe2, .golpe3").forEach((golpe, index) => {
     golpe.textContent = golpes[index];
   });
+}
+
+function mostrarHabilidade(numeroDoPlayer: 1 | 2, habilidade: string) {
+  const habilidadeAtual = document.getElementById(`habilidade${numeroDoPlayer}`);
+
+  if (habilidadeAtual) {
+    habilidadeAtual.textContent = `Usando: ${habilidade}`;
+  }
+}
+
+function limparHabilidades() {
+  mostrarHabilidade(1, "nenhuma");
+  mostrarHabilidade(2, "nenhuma");
 }
 
 function descobrirTipoPersonagem(player: Personagem): TipoPersonagem {
@@ -159,36 +224,88 @@ function prepararPrevia() {
   atualizarGolpes(1, tipoPlayer1);
   atualizarGolpes(2, tipoPlayer2);
   partida.atualizarInterface(player1, player2);
+  limparHabilidades();
+}
+
+function limparConsole() {
+  const consoleDoJogo = document.getElementById("console");
+
+  if (consoleDoJogo) {
+    consoleDoJogo.innerHTML = "<p>Console de jogo</p>";
+  }
+}
+
+function atualizarBotoes() {
+  const botaoJogar = document.getElementById("botaojogar") as HTMLButtonElement | null;
+  const botaoPausar = document.getElementById("botaopausar") as HTMLButtonElement | null;
+
+  if (botaoJogar) {
+    botaoJogar.disabled = jogoRodando;
+  }
+
+  if (botaoPausar) {
+    botaoPausar.disabled = !jogoRodando;
+  }
 }
 
 async function construirJogo() {
-  const botao = document.getElementById("botaojogar") as HTMLButtonElement | null;
-  const consoleDoJogo = document.getElementById("console");
   const tipoPlayer1 = lerSelecao("selectPlayer1");
   const tipoPlayer2 = lerSelecao("selectPlayer2");
   const player1 = criarPersonagem(tipoPlayer1, 1);
   const player2 = criarPersonagem(tipoPlayer2, 2);
   const partida = new Jogo();
 
-  if (botao) {
-    botao.disabled = true;
-  }
-
-  if (consoleDoJogo) {
-    consoleDoJogo.innerHTML = "<p>Console de jogo</p>";
-  }
+  partidaAtual?.cancelar();
+  partidaAtual = partida;
+  jogoRodando = true;
+  atualizarBotoes();
+  limparConsole();
+  limparHabilidades();
 
   atualizarGolpes(1, tipoPlayer1);
   atualizarGolpes(2, tipoPlayer2);
   await partida.iniciarJogo(player1, player2);
 
-  if (botao) {
-    botao.disabled = false;
+  if (partidaAtual === partida) {
+    jogoRodando = false;
+    partidaAtual = null;
+    atualizarBotoes();
   }
 }
 
+function pausarJogo() {
+  const botaoPausar = document.getElementById("botaopausar") as HTMLButtonElement | null;
+
+  if (!partidaAtual || !jogoRodando) return;
+
+  const pausado = partidaAtual.alternarPausa();
+
+  if (botaoPausar) {
+    botaoPausar.textContent = pausado ? "Continuar" : "Pausar";
+  }
+}
+
+function reiniciarJogo() {
+  const botaoPausar = document.getElementById("botaopausar") as HTMLButtonElement | null;
+
+  partidaAtual?.cancelar();
+  partidaAtual = null;
+  jogoRodando = false;
+
+  if (botaoPausar) {
+    botaoPausar.textContent = "Pausar";
+  }
+
+  limparConsole();
+  prepararPrevia();
+  atualizarBotoes();
+}
+
 document.getElementById("botaojogar")?.addEventListener("click", construirJogo);
-document.getElementById("selectPlayer1")?.addEventListener("change", prepararPrevia);
-document.getElementById("selectPlayer2")?.addEventListener("change", prepararPrevia);
+document.getElementById("botaopausar")?.addEventListener("click", pausarJogo);
+document.getElementById("botaoreiniciar")?.addEventListener("click", reiniciarJogo);
+document.getElementById("selectPlayer1")?.addEventListener("change", reiniciarJogo);
+document.getElementById("selectPlayer2")?.addEventListener("change", reiniciarJogo);
 
 prepararPrevia();
+atualizarBotoes();

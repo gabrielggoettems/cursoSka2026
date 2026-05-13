@@ -24,7 +24,7 @@ export abstract class Personagem {
     this.imagem = imagemDoPersonagem;
   }
 
-  public log(mensagem: string) {
+  public log(mensagem: string): void {
     const consoleDoJogo = document.getElementById("console");
 
     if (consoleDoJogo) {
@@ -33,10 +33,11 @@ export abstract class Personagem {
     }
   }
 
-  iscontinuavivo(): boolean {
+  public estaVivo(): boolean {
     return this.vida > 0;
   }
-  SofrerDano(dano: number): void {
+
+  public sofrerDano(dano: number): void {
     const danoReduzido = Math.round(dano * (1 - this.defesa / 100));
 
     this.vida = this.vida - danoReduzido;
@@ -56,14 +57,14 @@ export abstract class Personagem {
     }
   }
 
-  gerarataque(): number {
-    let maximoAtk = 3;
+  public gerarAtaque(): number {
+    const maximoAtaque = 3;
 
-    return Math.floor(Math.random() * maximoAtk) + 1;
+    return Math.floor(Math.random() * maximoAtaque) + 1;
   }
 
-  ataqueLancado(): string {
-    const ataque = this.gerarataque();
+  public ataqueLancado(): string {
+    const ataque = this.gerarAtaque();
 
     switch (ataque) {
       case 1:
@@ -77,10 +78,11 @@ export abstract class Personagem {
     }
   }
 
-  public abstract atacar(inimigo: Personagem): void;
+  public abstract atacar(inimigo: Personagem): string;
 
-  defesaLancada(): string {
-    const defesa = this.gerarataque();
+  public defesaLancada(): string {
+    const defesa = this.gerarAtaque();
+
     switch (defesa) {
       case 1:
         return "defesa fraca";
@@ -93,15 +95,15 @@ export abstract class Personagem {
     }
   }
 
-  getVida() {
+  public getVida(): number {
     return this.vida;
   }
 
-  getImgem() {
+  public getImagem(): string {
     return this.imagem;
   }
 
-  usarCura(): void {
+  public usarCura(): void {
     if (this.vida < 50 && !this.jaUsouCura) {
       this.vida = this.vida + this.cura;
 
