@@ -17,19 +17,16 @@ export class Mago extends Personagem {
 
     switch (ataque) {
       case 1:
-        this.registrarAtaque("Magia fraca");
         this.log(`${this.nome} lancou magia fraca de fogo.`);
         inimigo.SofrerDano(5);
         break;
 
       case 2:
-        this.registrarAtaque("Magia media");
         this.log(`${this.nome} lancou magia media de gelo.`);
         inimigo.SofrerDano(10);
         break;
 
       case 3:
-        this.registrarAtaque("Magia poderosa");
         this.log(`${this.nome} lancou magia poderosa de raio.`);
         inimigo.SofrerDano(20);
         break;

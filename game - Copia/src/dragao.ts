@@ -24,19 +24,16 @@ export class Dragao extends Personagem {
   }
 
   ataqueDragao1(inimigo: Personagem): void {
-    this.registrarAtaque("Arranhao fraco");
     this.log(`${this.nome} arranhou ${inimigo.nome}.`);
     inimigo.SofrerDano(5);
   }
 
   ataqueDragao2(inimigo: Personagem): void {
-    this.registrarAtaque("Mordida media");
     this.log(`${this.nome} mordeu ${inimigo.nome}.`);
     inimigo.SofrerDano(10);
   }
 
   ataqueDragao3(inimigo: Personagem): void {
-    this.registrarAtaque("Fogo poderoso");
     this.log(`${this.nome} cuspiu fogo em ${inimigo.nome}.`);
     inimigo.SofrerDano(20);
   }

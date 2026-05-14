@@ -5,7 +5,6 @@ export abstract class Personagem {
   protected defesa: number = 0;
   protected cura: number = 0;
   protected imagem: string = "";
-  protected ultimoAtaque: string = "aguardando";
 
   private jaUsouCura: boolean = false;
 
@@ -80,12 +79,18 @@ export abstract class Personagem {
 
   public abstract atacar(inimigo: Personagem): void;
 
-  protected registrarAtaque(ataque: string): void {
-    this.ultimoAtaque = ataque;
-  }
-
-  getUltimoAtaque() {
-    return this.ultimoAtaque;
+  defesaLancada(): string {
+    const defesa = this.gerarataque();
+    switch (defesa) {
+      case 1:
+        return "defesa fraca";
+      case 2:
+        return "defesa média";
+      case 3:
+        return "defesa forte";
+      default:
+        return "erro";
+    }
   }
 
   getVida() {

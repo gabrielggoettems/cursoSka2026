@@ -5,11 +5,6 @@ import { Personagem } from "./personagem.ts";
 
 type TipoPersonagem = "mago" | "cavaleiro" | "dragao";
 
-let partidaAtual = 0;
-let partidaEmAndamento = false;
-let jogoPausado = false;
-let resolverRetomada: (() => void) | null = null;
-
 const textosDosGolpes: Record<TipoPersonagem, string[]> = {
   mago: ["Magia fraca", "Magia media", "Magia poderosa"],
   cavaleiro: ["Ataque fraco", "Ataque medio", "Ataque poderoso"],
@@ -17,29 +12,23 @@ const textosDosGolpes: Record<TipoPersonagem, string[]> = {
 };
 
 export class Jogo {
-  public async iniciarJogo(player1: Personagem, player2: Personagem, idDaPartida: number) {
+  public async iniciarJogo(player1: Personagem, player2: Personagem) {
     let turno = 1;
 
     this.log(`Partida iniciada: ${player1.nome} VS ${player2.nome}`);
     this.atualizarInterface(player1, player2);
 
-    while (partidaEstaAtiva(idDaPartida) && player1.iscontinuavivo() && player2.iscontinuavivo()) {
-      await aguardarRetomada(idDaPartida);
-      if (!partidaEstaAtiva(idDaPartida)) break;
-
+    while (player1.iscontinuavivo() && player2.iscontinuavivo()) {
       this.log(`Round ${turno}`);
 
       player1.atacar(player2);
-      atualizarAtaqueUsado(1, player1.getUltimoAtaque());
       animarAtaque(1, player1);
       this.atualizarInterface(player1, player2);
       await this.esperarTempo();
 
-      await aguardarRetomada(idDaPartida);
-      if (!partidaEstaAtiva(idDaPartida) || !player2.iscontinuavivo()) break;
+      if (!player2.iscontinuavivo()) break;
 
       player2.atacar(player1);
-      atualizarAtaqueUsado(2, player2.getUltimoAtaque());
       animarAtaque(2, player2);
       this.atualizarInterface(player1, player2);
       await this.esperarTempo();
@@ -47,13 +36,11 @@ export class Jogo {
       turno++;
     }
 
-    if (partidaEstaAtiva(idDaPartida)) {
-      this.log(
-        player1.iscontinuavivo()
-          ? `${player1.nome} venceu!`
-          : `${player2.nome} venceu!`,
-      );
-    }
+    this.log(
+      player1.iscontinuavivo()
+        ? `${player1.nome} venceu!`
+        : `${player2.nome} venceu!`,
+    );
   }
 
   buscaComponente<T extends HTMLElement>(id: string) {
@@ -72,18 +59,15 @@ export class Jogo {
     const vida = this.buscaComponente<HTMLDivElement>(`vida${numeroDoPlayer}`);
     const nome = carta?.querySelector(`.PlayerEfeito${numeroDoPlayer}`);
     const vidaAtual = Math.max(0, Math.round(player.getVida()));
-    const tipo = descobrirTipoPersonagem(player);
       
 
     if (imagem) {
       imagem.src = player.getImgem();
-      imagem.className = `tipo-${tipo}`;
     }
 
 
     if (imagemArena) {
       imagemArena.src = player.getImgem();
-      imagemArena.className = `arena-personagem arena-player${numeroDoPlayer} tipo-${tipo}`;
     }
 
     if (vida) {
@@ -165,51 +149,6 @@ function animarAtaque(numeroDoPlayer: 1 | 2, player: Personagem) {
   personagemArena?.classList.add(`arena-atacando-p${numeroDoPlayer}`);
 }
 
-function partidaEstaAtiva(idDaPartida: number) {
-  return partidaEmAndamento && partidaAtual === idDaPartida;
-}
-
-function atualizarAtaqueUsado(numeroDoPlayer: 1 | 2, ataque: string) {
-  const indicador = document.getElementById(`ataqueUsado${numeroDoPlayer}`);
-
-  if (indicador) {
-    indicador.textContent = `P${numeroDoPlayer}: ${ataque}`;
-  }
-}
-
-function limparAtaquesUsados() {
-  atualizarAtaqueUsado(1, "aguardando");
-  atualizarAtaqueUsado(2, "aguardando");
-}
-
-async function aguardarRetomada(idDaPartida: number) {
-  while (jogoPausado && partidaEstaAtiva(idDaPartida)) {
-    await new Promise<void>((resolve) => {
-      resolverRetomada = resolve;
-    });
-  }
-}
-
-function retomarJogo() {
-  jogoPausado = false;
-  resolverRetomada?.();
-  resolverRetomada = null;
-}
-
-function atualizarControles(textoBotao: string, mostrarReiniciar: boolean, desabilitarBotao = false) {
-  const botao = document.getElementById("botaojogar") as HTMLButtonElement | null;
-  const botaoReiniciar = document.getElementById("botaoreiniciar") as HTMLButtonElement | null;
-
-  if (botao) {
-    botao.textContent = textoBotao;
-    botao.disabled = desabilitarBotao;
-  }
-
-  if (botaoReiniciar) {
-    botaoReiniciar.hidden = !mostrarReiniciar;
-  }
-}
-
 function prepararPrevia() {
   const tipoPlayer1 = lerSelecao("selectPlayer1");
   const tipoPlayer2 = lerSelecao("selectPlayer2");
@@ -219,22 +158,21 @@ function prepararPrevia() {
 
   atualizarGolpes(1, tipoPlayer1);
   atualizarGolpes(2, tipoPlayer2);
-  limparAtaquesUsados();
   partida.atualizarInterface(player1, player2);
 }
 
 async function construirJogo() {
+  const botao = document.getElementById("botaojogar") as HTMLButtonElement | null;
   const consoleDoJogo = document.getElementById("console");
   const tipoPlayer1 = lerSelecao("selectPlayer1");
   const tipoPlayer2 = lerSelecao("selectPlayer2");
   const player1 = criarPersonagem(tipoPlayer1, 1);
   const player2 = criarPersonagem(tipoPlayer2, 2);
   const partida = new Jogo();
-  const idDaPartida = ++partidaAtual;
 
-  partidaEmAndamento = true;
-  retomarJogo();
-  atualizarControles("Pausar", true);
+  if (botao) {
+    botao.disabled = true;
+  }
 
   if (consoleDoJogo) {
     consoleDoJogo.innerHTML = "<p>Console de jogo</p>";
@@ -242,36 +180,14 @@ async function construirJogo() {
 
   atualizarGolpes(1, tipoPlayer1);
   atualizarGolpes(2, tipoPlayer2);
-  limparAtaquesUsados();
-  await partida.iniciarJogo(player1, player2, idDaPartida);
+  await partida.iniciarJogo(player1, player2);
 
-  if (partidaAtual === idDaPartida) {
-    partidaEmAndamento = false;
-    retomarJogo();
-    atualizarControles("Jogar", false);
+  if (botao) {
+    botao.disabled = false;
   }
 }
 
-function controlarBotaoPrincipal() {
-  if (!partidaEmAndamento) {
-    construirJogo();
-    return;
-  }
-
-  jogoPausado = !jogoPausado;
-  atualizarControles(jogoPausado ? "Retomar" : "Pausar", true);
-  if (!jogoPausado) retomarJogo();
-}
-
-function reiniciarJogo() {
-  partidaAtual++;
-  partidaEmAndamento = false;
-  retomarJogo();
-  construirJogo();
-}
-
-document.getElementById("botaojogar")?.addEventListener("click", controlarBotaoPrincipal);
-document.getElementById("botaoreiniciar")?.addEventListener("click", reiniciarJogo);
+document.getElementById("botaojogar")?.addEventListener("click", construirJogo);
 document.getElementById("selectPlayer1")?.addEventListener("change", prepararPrevia);
 document.getElementById("selectPlayer2")?.addEventListener("change", prepararPrevia);
 

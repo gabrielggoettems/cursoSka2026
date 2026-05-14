@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="jogo.js" defer></script>
+</head>
+
+<body>
+
+  <h1 class="titulo">MEU JOGO</h1>
+
+  <div class="selecao">
+    <label>
+      Jogador 1
+      <select id="selectPlayer1">
+        <option value="mago">Mago Merlin</option>
+        <option value="cavaleiro">Cavaleiro Arthur</option>
+        <option value="dragao">Dragão Hraezlyr</option>
+      </select>
+    </label>
+
+    <label>
+      Jogador 2
+      <select id="selectPlayer2">
+        <option value="mago">Mago Gandalf</option>
+        <option value="cavaleiro">Cavaleiro Morgan</option>
+        <option value="dragao">Dragão Shielong</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="container">
+
+    <div class="player" id="imgplayer1">
+      <div class="fundoCarta">
+        <img src="" alt="Personagem do jogador 1">
+        <div class="bordaBarra">
+          <div class="barra">
+            <div class="vida" id="vida1">hp 100</div>
+          </div>
+        </div>
+        <div class="PlayerEfeito1">Mago</div>
+        <div class="golpe1">Magia fraca</div>
+        <div class="golpe2">Magia média</div>
+        <div class="golpe3">Magia poderosa</div>
+        <div class="habilidadeAtual" id="habilidade1">Usando: nenhuma</div>
+      </div>
+    </div>
+
+    <div class="arena">
+      <img class="arena-img" src="./public/Arena.png" alt="Arena de batalha">
+      <img class="arena-personagem arena-player1" id="arenaPlayer1" src="" alt="Jogador 1 na arena">
+      <img class="arena-personagem arena-player2" id="arenaPlayer2" src="" alt="Jogador 2 na arena">
+      <div class="ataque ataque-p1"></div>
+      <div class="ataque ataque-p2"></div>
+    </div>
+
+    <div class="player" id="imgplayer2">
+      <div class="fundoCarta">
+        <img src="" alt="Personagem do jogador 2">
+        <div class="bordaBarra">
+          <div class="barra">
+            <div class="vida" id="vida2">hp 100</div>
+          </div>
+        </div>
+        <div class="PlayerEfeito2">Cavaleiro</div>
+        <div class="golpe1">Ataque fraco</div>
+        <div class="golpe2">Ataque médio</div>
+        <div class="golpe3">Ataque poderoso</div>
+        <div class="habilidadeAtual" id="habilidade2">Usando: nenhuma</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controles">
+    <button class="botao_jogar" id="botaojogar" type="button">Jogar</button>
+    <button class="botao_pause" id="botaopausar" type="button">Pausar</button>
+    <button class="botao_reiniciar" id="botaoreiniciar" type="button">Reiniciar</button>
+  </div>
+
+  <div class="console" id="console">
+    <p>Console de jogo</p>
+  </div>
+</body>
+
+</html>

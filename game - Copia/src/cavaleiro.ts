@@ -31,19 +31,16 @@ export class Cavaleiro extends Personagem {
   }
 
   ataqueCavaleiro1(inimigo: Personagem): void {
-    this.registrarAtaque("Ataque fraco");
     this.log(`${this.nome} deu um ataque fraco em ${inimigo.nome}.`);
     inimigo.SofrerDano(5);
   }
 
   ataqueCavaleiro2(inimigo: Personagem): void {
-    this.registrarAtaque("Ataque medio");
     this.log(`${this.nome} deu um ataque medio em ${inimigo.nome}.`);
     inimigo.SofrerDano(10);
   }
 
   ataqueCavaleiro3(inimigo: Personagem): void {
-    this.registrarAtaque("Ataque poderoso");
     this.log(`${this.nome} deu um ataque poderoso em ${inimigo.nome}.`);
     inimigo.SofrerDano(20);
   }

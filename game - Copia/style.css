@@ -117,7 +117,7 @@ body {
 .golpe1,
 .golpe2,
 .golpe3,
-.fundoCarta>div:not(.bordaBarra):not(.PlayerEfeito1):not(.PlayerEfeito2) {
+.fundoCarta > div:not(.bordaBarra):not(.PlayerEfeito1):not(.PlayerEfeito2) {
   margin-top: 8px;
   padding: 8px;
   border: 1px solid rgba(255, 255, 255, 0.22);
@@ -133,18 +133,10 @@ body {
   text-shadow: 0 2px 0 black;
 }
 
-.controles-jogo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin: 24px auto;
-}
-
 .botao_jogar,
-.botao_reiniciar,
 .botaoJogar {
-  min-width: 128px;
+  display: block;
+  margin: 24px auto;
   padding: 12px 34px;
   border: 0;
   border-radius: 6px;
@@ -153,10 +145,6 @@ body {
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
-}
-
-.botao_reiniciar {
-  background: #6b2d2d;
 }
 
 .botao_jogar:disabled,
@@ -206,11 +194,6 @@ body {
   object-fit: contain;
   filter: drop-shadow(0 12px 10px rgba(0, 0, 0, 0.65));
   pointer-events: none;
-}
-
-.arena-personagem.tipo-mago {
-  width: 112px;
-  height: 140px;
 }
 
 .arena-player1 {
@@ -271,8 +254,8 @@ body {
 .ataque-dragao {
   width: 210px;
   height: 72px;
-  clip-path: polygon(100% 50%, 82% 18%, 66% 40%, 50% 12%, 28% 44%, 0 50%, 28% 56%, 50% 88%, 66% 60%, 82% 82%);
-  background: linear-gradient(270deg, #fff3a6, #ff7a1a, #d91414, transparent);
+  clip-path: polygon(0 50%, 18% 18%, 34% 40%, 50% 12%, 72% 44%, 100% 50%, 72% 56%, 50% 88%, 34% 60%, 18% 82%);
+  background: linear-gradient(90deg, #fff3a6, #ff7a1a, #d91414, transparent);
   box-shadow: 0 0 22px #ff7a1a, 0 0 40px #ff1f1f;
 }
 
@@ -281,34 +264,7 @@ body {
 }
 
 .ataque-p2.ataque-dragao {
-  clip-path: polygon(0 50%, 18% 18%, 34% 40%, 50% 12%, 72% 44%, 100% 50%, 72% 56%, 50% 88%, 34% 60%, 18% 82%);
-  background: linear-gradient(90deg, #fff3a6, #ff7a1a, #d91414, transparent);
-}
-
-.ataques-usados {
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 12px;
-  z-index: 4;
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  pointer-events: none;
-}
-
-.ataques-usados span {
-  max-width: 48%;
-  padding: 6px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.55);
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  background: linear-gradient(270deg, #fff3a6, #ff7a1a, #d91414, transparent);
 }
 
 .atacando-p1 {
