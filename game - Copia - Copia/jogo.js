@@ -92,14 +92,7 @@
   // src/cavaleiro.ts
   var Cavaleiro = class extends Personagem {
     constructor(nome, vida, forca, defesa) {
-      super(
-        nome,
-        vida,
-        forca,
-        defesa,
-        30,
-        "./public/cavaleiro.png"
-      );
+      super(nome, vida, forca, defesa, 30, "./public/cavaleiro.png");
       this.ataques = [
         { dano: 5, habilidade: "Ataque fraco", mensagem: "deu um ataque fraco" },
         { dano: 10, habilidade: "Ataque m\xE9dio", mensagem: "deu um ataque m\xE9dio" },
@@ -118,7 +111,7 @@
   // src/dragao.ts
   var Dragao = class extends Personagem {
     constructor(nome, vida, forca, defesa) {
-      super(nome, vida, forca, defesa, 25, "./public/dragao.png");
+      super(nome, vida, forca, defesa, 30, "./public/dragao.png");
       this.ataques = [
         { dano: 5, habilidade: "Arranh\xE3o fraco", mensagem: "arranhou" },
         { dano: 10, habilidade: "Mordida m\xE9dia", mensagem: "mordeu" },
@@ -137,14 +130,7 @@
   // src/mago.ts
   var Mago = class extends Personagem {
     constructor(nome, vida, forca, defesa) {
-      super(
-        nome,
-        vida,
-        forca,
-        defesa,
-        30,
-        "https://i.pinimg.com/originals/ec/45/80/ec4580d525dfafcd8c22a5a8f4d26033.png"
-      );
+      super(nome, vida, forca, defesa, 30, "./public/mago.png");
       this.ataques = [
         { dano: 5, habilidade: "Magia fraca de fogo", mensagem: "lan\xE7ou magia fraca de fogo" },
         { dano: 10, habilidade: "Magia m\xE9dia de gelo", mensagem: "lan\xE7ou magia m\xE9dia de gelo" },

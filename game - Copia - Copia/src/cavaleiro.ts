@@ -8,14 +8,7 @@ export class Cavaleiro extends Personagem {
   ];
 
   constructor(nome: string, vida: number, forca: number, defesa: number) {
-    super(
-      nome,
-      vida,
-      forca,
-      defesa,
-      30,
-      "./public/cavaleiro.png",
-    );
+    super(nome, vida, forca, defesa, 30, "./public/cavaleiro.png");
   }
 
   public atacar(inimigo: Personagem): string {

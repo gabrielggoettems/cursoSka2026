@@ -9,7 +9,7 @@ export class Dragao extends Personagem {
   ];
 
   constructor(nome: string, vida: number, forca: number, defesa: number) {
-    super(nome, vida, forca, defesa, 25, "./public/dragao.png");
+    super(nome, vida, forca, defesa, 30, "./public/dragao.png");
   }
 
   public atacar(inimigo: Personagem): string {

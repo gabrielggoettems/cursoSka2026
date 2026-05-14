@@ -8,14 +8,7 @@ export class Mago extends Personagem {
   ];
 
   constructor(nome: string, vida: number, forca: number, defesa: number) {
-    super(
-      nome,
-      vida,
-      forca,
-      defesa,
-      30,
-      "https://i.pinimg.com/originals/ec/45/80/ec4580d525dfafcd8c22a5a8f4d26033.png",
-    );
+    super(nome, vida, forca, defesa, 30, "./public/mago.png",);
   }
 
   public atacar(inimigo: Personagem): string {
