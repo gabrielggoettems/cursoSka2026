@@ -5,6 +5,7 @@ export class Dragao extends Personagem {
     { dano: 5, habilidade: "Arranhão fraco", mensagem: "arranhou" },
     { dano: 10, habilidade: "Mordida média", mensagem: "mordeu" },
     { dano: 20, habilidade: "Fogo poderoso", mensagem: "cuspiu fogo em" },
+    
   ];
 
   constructor(nome: string, vida: number, forca: number, defesa: number) {

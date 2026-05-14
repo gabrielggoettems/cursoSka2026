@@ -290,7 +290,7 @@ body {
   width: 210px;
   height: 72px;
   clip-path: polygon(0 50%, 18% 18%, 34% 40%, 50% 12%, 72% 44%, 100% 50%, 72% 56%, 50% 88%, 34% 60%, 18% 82%);
-  background: linear-gradient(90deg, #d91414, #ff7a1a, #fff3a6, transparent);
+  background: linear-gradient(90deg, #d91414 , #ff7a1a, #fff3a6, transparent);
   box-shadow: 0 0 22px #ff7a1a, 0 0 40px #ff1f1f;
 }
 
